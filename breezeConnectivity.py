@@ -14,4 +14,4 @@ class BreezeClient:
 
 # Example usage
 client = BreezeClient(api_key="4`32&2Sp2kb2988N68^6!3364324=9D@")
-client.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5", session_token="40405580")
+client.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5", session_token="40514650")

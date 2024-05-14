@@ -14,44 +14,47 @@ breeze = BreezeConnect(api_key="4`32&2Sp2kb2988N68^6!3364324=9D@")
 
 # Generate Session
 breeze.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5",
-                        session_token="40405580")
-'2024-05-13T11:59:15.848Z'
-'2024-05-13T12:04:15.833Z'
+                        session_token="40514650")
+
 company_stock_code="BANBAR"
 data=breeze.get_historical_data_v2(interval="5minute",
-                            from_date= "2024-05-10T15:00:00.000Z",
-                            to_date= "2024-05-10T15:30:00.000Z",
+                            from_date= "2024-05-14T11:25:00.000Z",
+                            to_date= "2024-05-14T11:30:00.000Z",
                             stock_code=company_stock_code,
                             exchange_code="NSE",
-                            product_type="cash",
-                                    )
-
-close_prices = [entry["close"] for entry in data["Success"]]
-
-import pandas as pd
-from test_5 import calculate_ema_5
+                            product_type="cash")
 
 
+# Extracting open and close prices
+open_prices = [entry['open'] for entry in data['Success']]
+low_prices= [entry['low'] for entry in data['Success']]
+lowest_price = min(low_prices)
+close_prices = [entry['close'] for entry in data['Success']]
 
+red_colour_counter = 1
 
-closing_prices = close_prices
-
-index = pd.date_range(start='2024-04-25 09:15:00', end='2024-05-03 15:15:00', freq='5min')
-
-closing_prices_series = pd.Series(closing_prices, index=pd.date_range(start='2024-04-25 09:15:00', periods=len(close_prices), freq='5min'))
-ema_5 = calculate_ema_5(closing_prices_series, window=5)
-
-# Plotting
-import matplotlib.pyplot as plt
-
+# Plotting candles
 plt.figure(figsize=(10, 6))
-plt.plot(ema_5, label='EMA (21 days)', color='red')
-plt.title('Intraday Closing Prices and Exponential Moving Average (EMA)')
-plt.xlabel('Time')
+
+for i in range(len(open_prices)):
+    if close_prices[i] > open_prices[i]:
+        plt.plot([i, i], [low := open_prices[i], high := close_prices[i]], color='green', linewidth=3)
+        plt.plot([i, i], [low, high], marker='o', color='green', markersize=7)
+
+    else:
+        plt.plot([i, i], [low := close_prices[i], high := open_prices[i]], color='red', linewidth=3)
+        plt.plot([i, i], [low, high], marker='o', color='red', markersize=7)
+        red_colour_counter +=i
+
+if red_colour_counter==2:
+
+
+
+plt.xlabel('Time Interval')
 plt.ylabel('Price')
-plt.legend()
+plt.title('Intraday Candlestick Chart')
 plt.grid(True)
-plt.savefig('sample_graph.png')
+plt.savefig('green_red.png')
 plt.show()
 
 

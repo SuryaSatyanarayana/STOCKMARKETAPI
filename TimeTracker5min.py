@@ -11,7 +11,7 @@ class TimeTracker:
 
     @staticmethod
     def wait(seconds):
-        print(f"Waiting for {seconds} seconds for the next 5 minutes candle...")
+        print(f"WAITING FOR {seconds} SECONDS FOR THE NEXT 5 MINTUES CANDLE...")
         time.sleep(seconds)
 
     @staticmethod
