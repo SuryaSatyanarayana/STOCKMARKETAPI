@@ -13,8 +13,11 @@ start_hour, start_minute = 10, 30
 
 #STOCK MARKET MY END TIME
 end_hour, end_minute = 19, 30  # 7:30 PM
-
+Iteration = 1
 while True:
+    print("----------------------------------------------------------------------------------"
+          "-------------------------------------START--->", Iteration, "-----------------------------------------"
+                                                                       "-----------------------------------------------------------------------------------")
     # Get the current time
     current_time = time.localtime()
 
@@ -41,12 +44,10 @@ while True:
         current_time_in_ist = converter.get_current_ist_time()
 
         current_time_5_mins_before = TimeConverter.convert_to_ist(5)
-        print("PRINT THE 5 MINS BEFORE THE CURRENT TIME:: ",current_time_5_mins_before)
-
+        print("PRINT THE 5 MINS BEFORE THE CURRENT TIME:: ", current_time_5_mins_before)
 
         current_time_10_mins_before = TimeConverter.convert_to_ist(10)
-        print("PRINT THE 10 MINS BEFORE THE CURRENT TIME:: ",current_time_10_mins_before)
-
+        print("PRINT THE 10 MINS BEFORE THE CURRENT TIME:: ", current_time_10_mins_before)
 
         # date_object = datetime.strptime(current_time_in_ist, "%Y-%m-%dT%H:%M:%S.%fZ")
         # current_time_seconds = date_object.second
@@ -88,9 +89,9 @@ while True:
                 print("RED GREEN COLOUR CANDLES MATCHED SUCCESSFULLY")
                 converter = DateTimeConverter()
                 current_time_in_ist = converter.get_current_ist_time()
-                print("PRINT THE CURRENT TIME:: ",current_time_in_ist)
+                print("PRINT THE CURRENT TIME:: ", current_time_in_ist)
                 current_time_1_mins_before = TimeConverter.convert_to_ist(1)
-                print("PRINT 1 MIN BEFORE THE CURRENT TIME:: ",current_time_1_mins_before)
+                print("PRINT 1 MIN BEFORE THE CURRENT TIME:: ", current_time_1_mins_before)
                 data = breeze.get_historical_data_v2(interval="1second",
                                                      from_date="2024-05-14T11:26:00.000Z",
                                                      to_date="2024-05-14T11:27:00.000Z",
@@ -149,3 +150,8 @@ while True:
     else:
         print("MY JOB IS DONE I AM EXITING THE STOCK MARKET BYE BYE SEE YOU TOMORROW AGAIN")
         break  # Exit the loop if the program should not be running
+
+    print("----------------------------------------------------------------------------------"
+          "-------------------------------------END-----------------------------------------"
+          "-----------------------------------------------------------------------------------")
+    Iteration += 1
