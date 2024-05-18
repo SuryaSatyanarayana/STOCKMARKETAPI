@@ -49,9 +49,6 @@ while True:
         current_time_10_mins_before = TimeConverter.convert_to_ist(10)
         print("PRINT THE 10 MINS BEFORE THE CURRENT TIME:: ", current_time_10_mins_before)
 
-        # date_object = datetime.strptime(current_time_in_ist, "%Y-%m-%dT%H:%M:%S.%fZ")
-        # current_time_seconds = date_object.second
-
         date_object = datetime.strptime(current_time_5_mins_before, "%Y-%m-%dT%H:%M:%S.%fZ")
         diff_time_seconds_5mins = date_object.second
 
