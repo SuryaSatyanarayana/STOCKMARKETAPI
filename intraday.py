@@ -9,10 +9,10 @@ from breeze_connect import BreezeConnect
 import time
 
 #STOCK MARKET MY START TIME
-start_hour, start_minute = 10, 30
+start_hour, start_minute = 9, 15
 
 #STOCK MARKET MY END TIME
-end_hour, end_minute = 19, 30  # 7:30 PM
+end_hour, end_minute = 14, 30  # 7:30 PM
 Iteration = 1
 while True:
     print("----------------------------------------------------------------------------------"
@@ -59,8 +59,8 @@ while True:
 
             company_stock_code = "BANBAR"
             data = breeze.get_historical_data_v2(interval="5minute",
-                                                 from_date="2024-05-18T12:00:00.000Z",
-                                                 to_date="2024-05-18T12:05:00.000Z",
+                                                 from_date=current_time_10_mins_before,
+                                                 to_date=current_time_5_mins_before,
                                                  stock_code=company_stock_code,
                                                  exchange_code="NSE",
                                                  product_type="cash")
@@ -90,8 +90,8 @@ while True:
                 current_time_1_mins_before = TimeConverter.convert_to_ist(1)
                 print("PRINT 1 MIN BEFORE THE CURRENT TIME:: ", current_time_1_mins_before)
                 data = breeze.get_historical_data_v2(interval="1second",
-                                                     from_date="2024-05-14T11:26:00.000Z",
-                                                     to_date="2024-05-14T11:27:00.000Z",
+                                                     from_date=current_time_1_mins_before,
+                                                     to_date=current_time_in_ist,
                                                      stock_code=company_stock_code,
                                                      exchange_code="NSE",
                                                      product_type="cash")
@@ -109,18 +109,20 @@ while True:
                                    price=lowest_price,
                                    validity="day",
                                    )
-                print("EXECUTED BUY ORDER WITH PRICE OF:: ", lowest_price)
 
                 portfolio_positions = breeze.get_portfolio_positions()
-
                 is_active = False
-                while portfolio_positions.get('Success') is None:
-                    if portfolio_positions.get('Success') is not None:
-                        print("BUY STOCK SUCCESSFULLY IN PORTFOLIO")
-                        is_active = True
-                    else:
+
+                if portfolio_positions.get('Success') is not None:
+                    print("BUY STOCK SUCCESSFULLY IN PORTFOLIO")
+                    is_active = True
+                else:
+                    while portfolio_positions.get('Success') is None:
                         print("BUY SIDE STOCK STILL NOT IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                         time.sleep(30)
+                        portfolio_positions = breeze.get_portfolio_positions()
+
+                print("EXECUTED BUY ORDER WITH PRICE OF:: ", lowest_price)
 
                 if is_active:
                     breeze.place_order(stock_code=company_stock_code,
@@ -133,16 +135,21 @@ while True:
                                        price=selling_price,
                                        validity="day",
                                        )
-                    print("EXECUTED SELL ORDER WITH PRICE OF :: ", selling_price)
 
+
+                portfolio_positions = breeze.get_portfolio_positions()
                 is_active = False
-                while portfolio_positions.get('Success') is not None:
-                    if portfolio_positions.get('Success') is None:
-                        print("SELL STOCK SUCCESSFULLY FROM PORTFOLIO")
-                        is_active = True
-                    else:
-                        print("SELL SIDE STOCK STILL NOT IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
+
+                if portfolio_positions.get('Success') is None:
+                    print("SELL STOCK SUCCESSFULLY FROM PORTFOLIO")
+                    is_active = True
+                else:
+                    while portfolio_positions.get('Success') is not None:
+                        print("SELL SIDE STOCK STILL IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                         time.sleep(30)
+                        portfolio_positions = breeze.get_portfolio_positions()
+
+                print("EXECUTED SELL ORDER WITH PRICE OF :: ", selling_price)
 
     else:
         print("MY JOB IS DONE I AM EXITING THE STOCK MARKET BYE BYE SEE YOU TOMORROW AGAIN")
