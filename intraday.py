@@ -12,7 +12,7 @@ import time
 start_hour, start_minute = 9, 15
 
 #STOCK MARKET MY END TIME
-end_hour, end_minute = 23, 30  # 7:30 PM
+end_hour, end_minute = 21, 30  # 7:30 PM
 Iteration = 1
 while True:
     print("----------------------------------------------------------------------------------"
@@ -34,7 +34,7 @@ while True:
 
         # Generate Session
         breeze.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5",
-                                session_token="40799976")
+                                session_token="40866662")
 
         print("BREEZE API CONNECTION ESTABLISHED SUCCESSFULLY")
 
@@ -59,8 +59,8 @@ while True:
 
             company_stock_code = "BANBAR"
             data = breeze.get_historical_data_v2(interval="5minute",
-                                                 from_date=current_time_10_mins_before,
-                                                 to_date=current_time_5_mins_before,
+                                                 from_date="2024-05-21T14:15:00.000Z",
+                                                 to_date="2024-05-21T14:20:00.000Z",
                                                  stock_code=company_stock_code,
                                                  exchange_code="NSE",
                                                  product_type="cash")
@@ -90,8 +90,8 @@ while True:
                 current_time_1_mins_before = TimeConverter.convert_to_ist(1)
                 print("PRINT 1 MIN BEFORE THE CURRENT TIME:: ", current_time_1_mins_before)
                 data = breeze.get_historical_data_v2(interval="1second",
-                                                     from_date=current_time_1_mins_before,
-                                                     to_date=current_time_in_ist,
+                                                     from_date="2024-05-21T14:19:00.000Z",
+                                                     to_date="2024-05-21T14:20:00.000Z",
                                                      stock_code=company_stock_code,
                                                      exchange_code="NSE",
                                                      product_type="cash")
@@ -112,12 +112,11 @@ while True:
 
                 portfolio_positions = breeze.get_portfolio_positions()
                 is_active = False
-
-                if portfolio_positions.get('Success') is not None:
-                    print("BUY STOCK SUCCESSFULLY IN PORTFOLIO")
-                    is_active = True
-                else:
-                    while portfolio_positions.get('Success') is None:
+                while portfolio_positions.get('Success') is None:
+                    if portfolio_positions.get('Success') is not None:
+                        print("BUY STOCK SUCCESSFULLY IN PORTFOLIO")
+                        is_active = True
+                    else:
                         print("BUY SIDE STOCK STILL NOT IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                         time.sleep(30)
                         portfolio_positions = breeze.get_portfolio_positions()
@@ -140,16 +139,18 @@ while True:
                 portfolio_positions = breeze.get_portfolio_positions()
                 is_active = False
 
-                if portfolio_positions.get('Success') is None:
-                    print("SELL STOCK SUCCESSFULLY FROM PORTFOLIO")
-                    is_active = True
-                else:
-                    while portfolio_positions.get('Success') is not None:
+                while portfolio_positions.get('Success') is not None:
+                    if portfolio_positions.get('Success') is None:
+                        print("SELL STOCK SUCCESSFULLY FROM PORTFOLIO")
+                        is_active = True
+                    else:
                         print("SELL SIDE STOCK STILL IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                         time.sleep(30)
                         portfolio_positions = breeze.get_portfolio_positions()
 
                 print("EXECUTED SELL ORDER WITH PRICE OF :: ", selling_price)
+            else:
+                print("RED GREEN CANDLE NOT MATCHED AS PER THE CURRENT 5 MINS AND 10 MINS TIME FRAME")
 
     else:
         print("MY JOB IS DONE I AM EXITING THE STOCK MARKET BYE BYE SEE YOU TOMORROW AGAIN")
