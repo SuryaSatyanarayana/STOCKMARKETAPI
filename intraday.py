@@ -34,7 +34,7 @@ while True:
 
         # Generate Session
         breeze.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5",
-                                session_token="40866662")
+                                session_token="40944990")
 
         print("BREEZE API CONNECTION ESTABLISHED SUCCESSFULLY")
 
@@ -59,8 +59,8 @@ while True:
 
             company_stock_code = "BANBAR"
             data = breeze.get_historical_data_v2(interval="5minute",
-                                                 from_date="2024-05-21T14:15:00.000Z",
-                                                 to_date="2024-05-21T14:20:00.000Z",
+                                                 from_date=current_time_10_mins_before,
+                                                 to_date=current_time_5_mins_before,
                                                  stock_code=company_stock_code,
                                                  exchange_code="NSE",
                                                  product_type="cash")
@@ -90,23 +90,23 @@ while True:
                 current_time_1_mins_before = TimeConverter.convert_to_ist(1)
                 print("PRINT 1 MIN BEFORE THE CURRENT TIME:: ", current_time_1_mins_before)
                 data = breeze.get_historical_data_v2(interval="1second",
-                                                     from_date="2024-05-21T14:19:00.000Z",
-                                                     to_date="2024-05-21T14:20:00.000Z",
+                                                     from_date=current_time_1_mins_before,
+                                                     to_date=current_time_in_ist,
                                                      stock_code=company_stock_code,
                                                      exchange_code="NSE",
                                                      product_type="cash")
                 low_prices = [entry['low'] for entry in data['Success']]
-                lowest_price = min(low_prices)
-                selling_price = lowest_price + 0.2
+                # lowest_price = min(low_prices)
+                # selling_price = lowest_price + 0.2
 
                 breeze.place_order(stock_code=company_stock_code,
                                    exchange_code="NSE",
                                    product="cash",
                                    action="buy",
-                                   order_type="limit",
+                                   order_type="market",
                                    stoploss="",
                                    quantity="1",
-                                   price=lowest_price,
+                                   price="",
                                    validity="day",
                                    )
 
@@ -116,12 +116,15 @@ while True:
                     if portfolio_positions.get('Success') is not None:
                         print("BUY STOCK SUCCESSFULLY IN PORTFOLIO")
                         is_active = True
+                        break
                     else:
                         print("BUY SIDE STOCK STILL NOT IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                         time.sleep(30)
                         portfolio_positions = breeze.get_portfolio_positions()
 
+                lowest_price = portfolio_positions['Success'][0]['average_price']
                 print("EXECUTED BUY ORDER WITH PRICE OF:: ", lowest_price)
+                selling_price = lowest_price + 0.2
 
                 if is_active:
                     breeze.place_order(stock_code=company_stock_code,
@@ -135,7 +138,6 @@ while True:
                                        validity="day",
                                        )
 
-
                 portfolio_positions = breeze.get_portfolio_positions()
                 is_active = False
 
@@ -143,6 +145,7 @@ while True:
                     if portfolio_positions.get('Success') is None:
                         print("SELL STOCK SUCCESSFULLY FROM PORTFOLIO")
                         is_active = True
+                        break
                     else:
                         print("SELL SIDE STOCK STILL IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                         time.sleep(30)
