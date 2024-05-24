@@ -8,11 +8,13 @@ from datetime import datetime
 from breeze_connect import BreezeConnect
 import time
 
+from readStockData import get_trade_by_stock_code
+
 #STOCK MARKET MY START TIME
 start_hour, start_minute = 9, 15
 
 #STOCK MARKET MY END TIME
-end_hour, end_minute = 21, 30  # 7:30 PM
+end_hour, end_minute = 23, 30  # 7:30 PM
 Iteration = 1
 while True:
     print("----------------------------------------------------------------------------------"
@@ -34,7 +36,7 @@ while True:
 
         # Generate Session
         breeze.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5",
-                                session_token="40944990")
+                                session_token="41117688")
 
         print("BREEZE API CONNECTION ESTABLISHED SUCCESSFULLY")
 
@@ -58,6 +60,11 @@ while True:
         if diff_time_seconds_10mins == 0 and diff_time_seconds_5mins == 0:
 
             company_stock_code = "BANBAR"
+
+            # Wait for 1 minute (60 seconds)
+            print("WAITING FOR 1 MINUTE")
+            time.sleep(60)
+
             data = breeze.get_historical_data_v2(interval="5minute",
                                                  from_date=current_time_10_mins_before,
                                                  to_date=current_time_5_mins_before,
@@ -70,7 +77,6 @@ while True:
             close_prices = [entry['close'] for entry in data['Success']]
 
             colour_list = []
-            # Plotting candles
 
             for i in range(len(open_prices)):
                 if close_prices[i] > open_prices[i]:
@@ -110,7 +116,7 @@ while True:
                                    validity="day",
                                    )
 
-                portfolio_positions = breeze.get_portfolio_positions()
+                portfolio_positions = get_trade_by_stock_code(breeze,company_stock_code)
                 is_active = False
                 while portfolio_positions.get('Success') is None:
                     if portfolio_positions.get('Success') is not None:
@@ -120,11 +126,12 @@ while True:
                     else:
                         print("BUY SIDE STOCK STILL NOT IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                         time.sleep(30)
-                        portfolio_positions = breeze.get_portfolio_positions()
+                        portfolio_positions = get_trade_by_stock_code(breeze,company_stock_code)
 
                 lowest_price = portfolio_positions['Success'][0]['average_price']
+                is_active = True
                 print("EXECUTED BUY ORDER WITH PRICE OF:: ", lowest_price)
-                selling_price = lowest_price + 0.2
+                selling_price = float(lowest_price) + 0.2
 
                 if is_active:
                     breeze.place_order(stock_code=company_stock_code,
@@ -138,7 +145,7 @@ while True:
                                        validity="day",
                                        )
 
-                portfolio_positions = breeze.get_portfolio_positions()
+                portfolio_positions = get_trade_by_stock_code(breeze,company_stock_code)
                 is_active = False
 
                 while portfolio_positions.get('Success') is not None:
@@ -149,7 +156,7 @@ while True:
                     else:
                         print("SELL SIDE STOCK STILL IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                         time.sleep(30)
-                        portfolio_positions = breeze.get_portfolio_positions()
+                        portfolio_positions = get_trade_by_stock_code(breeze,company_stock_code)
 
                 print("EXECUTED SELL ORDER WITH PRICE OF :: ", selling_price)
             else:
