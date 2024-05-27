@@ -36,7 +36,7 @@ while True:
 
         # Generate Session
         breeze.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5",
-                                session_token="41117688")
+                                session_token="41223909")
 
         print("BREEZE API CONNECTION ESTABLISHED SUCCESSFULLY")
 
