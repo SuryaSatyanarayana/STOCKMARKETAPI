@@ -14,7 +14,7 @@ from readStockData import get_trade_by_stock_code
 start_hour, start_minute = 9, 15
 
 #STOCK MARKET MY END TIME
-end_hour, end_minute = 23, 30  # 7:30 PM
+end_hour, end_minute = 14, 30  # 7:30 PM
 Iteration = 1
 while True:
     print("----------------------------------------------------------------------------------"
