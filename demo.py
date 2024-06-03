@@ -18,8 +18,8 @@ breeze.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5",
 
 company_stock_code="BANBAR"
 data=breeze.get_historical_data_v2(interval="5minute",
-                            from_date= "2024-05-14T11:25:00.000Z",
-                            to_date= "2024-05-14T11:30:00.000Z",
+                            from_date= "2024-05-18T12:05:00.000Z",
+                            to_date= "2024-05-18T12:10:00.000Z",
                             stock_code=company_stock_code,
                             exchange_code="NSE",
                             product_type="cash")
@@ -55,7 +55,6 @@ plt.ylabel('Price')
 plt.title('Intraday Candlestick Chart')
 plt.grid(True)
 plt.savefig('green_red.png')
-plt.show()
 
 
 

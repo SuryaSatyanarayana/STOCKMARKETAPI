@@ -14,8 +14,11 @@ from readStockData import get_trade_by_stock_code
 start_hour, start_minute = 9, 15
 
 #STOCK MARKET MY END TIME
-end_hour, end_minute = 14, 30  # 7:30 PM
+end_hour, end_minute = 14, 45  # 7:30 PM
 Iteration = 1
+
+Api_Count = 0
+
 while True:
     print("----------------------------------------------------------------------------------"
           "-------------------------------------START--->", Iteration, "-----------------------------------------"
@@ -36,7 +39,7 @@ while True:
 
         # Generate Session
         breeze.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5",
-                                session_token="41223909")
+                                session_token="41515050")
 
         print("BREEZE API CONNECTION ESTABLISHED SUCCESSFULLY")
 
@@ -59,7 +62,7 @@ while True:
 
         if diff_time_seconds_10mins == 0 and diff_time_seconds_5mins == 0:
 
-            company_stock_code = "BANBAR"
+            company_stock_code = "GAIL"
 
             # Wait for 1 minute (60 seconds)
             print("WAITING FOR 1 MINUTE")
@@ -71,6 +74,8 @@ while True:
                                                  stock_code=company_stock_code,
                                                  exchange_code="NSE",
                                                  product_type="cash")
+
+            Api_Count +=1
 
             # Extracting open and close prices
             open_prices = [entry['open'] for entry in data['Success']]
@@ -101,22 +106,31 @@ while True:
                                                      stock_code=company_stock_code,
                                                      exchange_code="NSE",
                                                      product_type="cash")
-                low_prices = [entry['low'] for entry in data['Success']]
-                # lowest_price = min(low_prices)
-                # selling_price = lowest_price + 0.2
+                Api_Count += 1
+
+                records = data['Success']
+
+                # Access the last record in the list
+                last_record = records[-1]
+
+                # Extract the 'open' values
+                buy_price = last_record['open']
+
+                sell_price = float(buy_price) + 0.2
 
                 breeze.place_order(stock_code=company_stock_code,
                                    exchange_code="NSE",
                                    product="cash",
                                    action="buy",
-                                   order_type="market",
+                                   order_type="limit",
                                    stoploss="",
                                    quantity="1",
-                                   price="",
+                                   price=buy_price,
                                    validity="day",
                                    )
+                Api_Count += 1
 
-                portfolio_positions = get_trade_by_stock_code(breeze,company_stock_code)
+                portfolio_positions = get_trade_by_stock_code(breeze, company_stock_code)
                 is_active = False
                 while portfolio_positions.get('Success') is None:
                     if portfolio_positions.get('Success') is not None:
@@ -125,13 +139,13 @@ while True:
                         break
                     else:
                         print("BUY SIDE STOCK STILL NOT IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
-                        time.sleep(30)
-                        portfolio_positions = get_trade_by_stock_code(breeze,company_stock_code)
+                        time.sleep(3)
+                        portfolio_positions = get_trade_by_stock_code(breeze, company_stock_code)
+                        Api_Count += 1
 
-                lowest_price = portfolio_positions['Success'][0]['average_price']
+                # lowest_price = portfolio_positions['Success'][0]['average_price']
                 is_active = True
-                print("EXECUTED BUY ORDER WITH PRICE OF:: ", lowest_price)
-                selling_price = float(lowest_price) + 0.2
+                print("EXECUTED BUY ORDER WITH PRICE OF:: ", buy_price)
 
                 if is_active:
                     breeze.place_order(stock_code=company_stock_code,
@@ -141,12 +155,13 @@ while True:
                                        order_type="limit",
                                        stoploss="",
                                        quantity="1",
-                                       price=selling_price,
+                                       price=sell_price,
                                        validity="day",
                                        )
 
-                portfolio_positions = get_trade_by_stock_code(breeze,company_stock_code)
+                portfolio_positions = get_trade_by_stock_code(breeze, company_stock_code)
                 is_active = False
+                Api_Count += 1
 
                 while portfolio_positions.get('Success') is not None:
                     if portfolio_positions.get('Success') is None:
@@ -155,10 +170,12 @@ while True:
                         break
                     else:
                         print("SELL SIDE STOCK STILL IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
-                        time.sleep(30)
-                        portfolio_positions = get_trade_by_stock_code(breeze,company_stock_code)
+                        time.sleep(60)
+                        portfolio_positions = get_trade_by_stock_code(breeze, company_stock_code)
+                        Api_Count += 1
 
-                print("EXECUTED SELL ORDER WITH PRICE OF :: ", selling_price)
+                print("EXECUTED SELL ORDER WITH PRICE OF :: ", sell_price)
+                print("TOTAL API COUNTS ::", Api_Count)
             else:
                 print("RED GREEN CANDLE NOT MATCHED AS PER THE CURRENT 5 MINS AND 10 MINS TIME FRAME")
 

@@ -1,19 +1,16 @@
-import matplotlib.pyplot as plt
+from read_open_position_status import find_first_matching_entry
 
-x = [1, 2, 3, 4, 5]
-y = [2, 3, 5, 7, 11]
+from kite import get_api_key
 
-# Plotting the graph
-plt.plot(x, y, marker='o', linestyle='-')
+kite = get_api_key()
 
-# Adding title and labels
-plt.title('Sample Graph')
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
+# Retrieve open positions
 
-# Save the plot to a file
-plt.savefig('sample_graph.png')
+tradingsymbol="BEL"
 
+read = find_first_matching_entry(kite,tradingsymbol,1)
 
-# Close the plot to free up memory
-plt.close()
+print(read)
+
+while read:
+    print("text")
