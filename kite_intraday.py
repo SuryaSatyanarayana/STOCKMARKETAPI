@@ -70,7 +70,7 @@ while True:
 
             # Wait for 1 minute (60 seconds)
             print("WAITING FOR 1 MINUTE")
-            # time.sleep(60)
+            time.sleep(60)
 
             data = kite.historical_data(instrument_id, diff_time_seconds_10mins, current_time_in_ist, "5minute")
 
@@ -124,7 +124,7 @@ while True:
                     transaction_type='BUY',
                     quantity=1,
                     order_type='MARKET',
-                    product='MIS'  # For intraday orders
+                    product='MIS'
                 )
                 Api_Count += 1
 
@@ -139,7 +139,6 @@ while True:
                         status = find_first_matching_entry(kite, trading_symbol, 1)
                         Api_Count += 1
 
-                # lowest_price = portfolio_positions['Success'][0]['average_price']
                 buy_price = data["day"][0]["average_price"]
                 print("EXECUTED BUY ORDER WITH PRICE OF:: ", buy_price)
 
@@ -160,7 +159,7 @@ while True:
 
                 while True:
                     if status:
-                        print("BUY STOCK SUCCESSFULLY IN PORTFOLIO")
+                        print("SELL STOCK SUCCESSFULLY IN PORTFOLIO")
                         break
                     else:
                         print("SELL SIDE STOCK STILL IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
