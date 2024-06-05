@@ -20,7 +20,7 @@ from read_open_position_status import find_first_matching_entry
 start_hour, start_minute = 9, 15
 
 # STOCK MARKET MY END TIME
-end_hour, end_minute = 21, 45  # 7:30 PM
+end_hour, end_minute = 22, 45  # 7:30 PM
 Iteration = 1
 
 Api_Count = 0
@@ -72,7 +72,8 @@ while True:
             print("WAITING FOR 1 MINUTE")
             time.sleep(60)
 
-            data = kite.historical_data(instrument_id, diff_time_seconds_10mins, current_time_in_ist, "5minute")
+            data = kite.historical_data(instrument_id, current_time_10_mins_before, current_time_in_ist, "5minute")
+            last_close_price_5min_candle = data[-1]['close']
 
             Api_Count += 1
 
@@ -113,62 +114,66 @@ while True:
                 print("PRINT THE CURRENT TIME:: ", current_time_in_ist)
                 current_time_1_mins_before = Kite_TimeConverter.kite_convert_to_ist(1)
                 print("PRINT 1 MIN BEFORE THE CURRENT TIME:: ", current_time_1_mins_before)
+                time.sleep(1)
+                data2 = kite.historical_data(instrument_id, current_time_1_mins_before, current_time_in_ist, "minute")
+                last_open_price_1min_Candle = data2[0]['open']
 
-                kite.historical_data(instrument_id, current_time_1_mins_before, current_time_in_ist, "minute")
-                Api_Count += 1
-
-                order_id = kite.place_order(
-                    tradingsymbol=trading_symbol,
-                    variety="regular",
-                    exchange='NSE',
-                    transaction_type='BUY',
-                    quantity=1,
-                    order_type='MARKET',
-                    product='MIS'
-                )
-                Api_Count += 1
-
-                status = find_first_matching_entry(kite, trading_symbol, 1)
-                while True:
-                    if status:
-                        print("BUY STOCK SUCCESSFULLY IN PORTFOLIO")
-                        break
-                    else:
-                        print("BUY SIDE STOCK STILL NOT IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
-                        time.sleep(2)
-                        status = find_first_matching_entry(kite, trading_symbol, 1)
-                        Api_Count += 1
-
-                buy_price = data["day"][0]["average_price"]
-                print("EXECUTED BUY ORDER WITH PRICE OF:: ", buy_price)
-
-                sell_price = float(buy_price) + 0.2
-
-                if status:
-                    order_id = kite.place_order(
+                if last_close_price_5min_candle >= last_open_price_1min_Candle:
+                    Api_Count += 1
+                    kite.place_order(
                         tradingsymbol=trading_symbol,
                         variety="regular",
                         exchange='NSE',
-                        transaction_type='SELL',
+                        transaction_type='BUY',
                         quantity=1,
-                        order_type=sell_price,
+                        order_type='MARKET',
                         product='MIS'
                     )
+                    Api_Count += 1
+                    status = find_first_matching_entry(kite, trading_symbol, 1)
+                    while True:
+                        if status:
+                            print("BUY STOCK SUCCESSFULLY IN PORTFOLIO")
+                            break
+                        else:
+                            print("BUY SIDE STOCK STILL NOT IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
+                            time.sleep(2)
+                            status = find_first_matching_entry(kite, trading_symbol, 1)
+                            Api_Count += 1
+                    buy = kite.positions()
+                    buy_price = buy["day"][0]["average_price"]
+                    print("EXECUTED BUY ORDER WITH PRICE OF:: ", buy_price)
 
-                status = find_first_matching_entry(kite, trading_symbol, 0)
+                    sell_price = float(buy_price) + 0.2
 
-                while True:
                     if status:
-                        print("SELL STOCK SUCCESSFULLY IN PORTFOLIO")
-                        break
-                    else:
-                        print("SELL SIDE STOCK STILL IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
-                        time.sleep(60)
-                        status = find_first_matching_entry(kite, trading_symbol, 0)
-                        Api_Count += 1
+                        order_id = kite.place_order(
+                            tradingsymbol=trading_symbol,
+                            variety="regular",
+                            exchange='NSE',
+                            transaction_type='SELL',
+                            quantity=1,
+                            price=sell_price,
+                            order_type="LIMIT",
+                            product='MIS'
+                        )
 
-                print("EXECUTED SELL ORDER WITH PRICE OF :: ", sell_price)
-                print("TOTAL API COUNTS ::", Api_Count)
+                    status = find_first_matching_entry(kite, trading_symbol, 0)
+
+                    while True:
+                        if status:
+                            print("SELL STOCK SUCCESSFULLY IN PORTFOLIO")
+                            break
+                        else:
+                            print("SELL SIDE STOCK STILL IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
+                            time.sleep(60)
+                            status = find_first_matching_entry(kite, trading_symbol, 0)
+                            Api_Count += 1
+
+                    print("EXECUTED SELL ORDER WITH PRICE OF :: ", sell_price)
+                    print("TOTAL API COUNTS ::", Api_Count)
+                else:
+                    print("LAST 5 MINS CLOSE PRICE IS NOT GREATER THE OPEN PRICE OF NEXT CANDLE")
             else:
                 print("RED GREEN CANDLE NOT MATCHED AS PER THE CURRENT 5 MINS AND 10 MINS TIME FRAME")
 
