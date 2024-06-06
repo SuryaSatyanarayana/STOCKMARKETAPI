@@ -20,7 +20,7 @@ from read_open_position_status import find_first_matching_entry
 start_hour, start_minute = 9, 15
 
 # STOCK MARKET MY END TIME
-end_hour, end_minute = 22, 45  # 7:30 PM
+end_hour, end_minute = 14, 45  # 7:30 PM
 Iteration = 1
 
 Api_Count = 0
@@ -130,24 +130,24 @@ while True:
                         product='MIS'
                     )
                     Api_Count += 1
-                    status = find_first_matching_entry(kite, trading_symbol, 1)
+                    result_data, is_matching = find_first_matching_entry(kite, trading_symbol, 1)
                     while True:
-                        if status:
+                        if is_matching:
                             print("BUY STOCK SUCCESSFULLY IN PORTFOLIO")
                             break
                         else:
                             print("BUY SIDE STOCK STILL NOT IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                             time.sleep(2)
-                            status = find_first_matching_entry(kite, trading_symbol, 1)
+                            result_data, is_matching = find_first_matching_entry(kite, trading_symbol, 1)
                             Api_Count += 1
-                    buy = kite.positions()
-                    buy_price = buy["day"][0]["average_price"]
+
+                    buy_price = result_data[0]["average_price"]
                     print("EXECUTED BUY ORDER WITH PRICE OF:: ", buy_price)
 
                     sell_price = float(buy_price) + 0.2
 
-                    if status:
-                        order_id = kite.place_order(
+                    if is_matching:
+                        kite.place_order(
                             tradingsymbol=trading_symbol,
                             variety="regular",
                             exchange='NSE',
@@ -158,16 +158,16 @@ while True:
                             product='MIS'
                         )
 
-                    status = find_first_matching_entry(kite, trading_symbol, 0)
+                    result_data, is_matching = find_first_matching_entry(kite, trading_symbol, 0)
 
                     while True:
-                        if status:
+                        if is_matching:
                             print("SELL STOCK SUCCESSFULLY IN PORTFOLIO")
                             break
                         else:
                             print("SELL SIDE STOCK STILL IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                             time.sleep(60)
-                            status = find_first_matching_entry(kite, trading_symbol, 0)
+                            result_data, is_matching = find_first_matching_entry(kite, trading_symbol, 0)
                             Api_Count += 1
 
                     print("EXECUTED SELL ORDER WITH PRICE OF :: ", sell_price)
