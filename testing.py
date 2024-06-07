@@ -1,106 +1,16 @@
-import json
-
-# Given JSON data
-json_data = '''[
-    {
-        "tradingsymbol": "GAIL",
-        "exchange": "BSE",
-        "instrument_token": 136231684,
-        "product": "CNC",
-        "quantity": -1,
-        "overnight_quantity": 0,
-        "multiplier": 1,
-        "average_price": 208.9,
-        "close_price": 0,
-        "last_price": 207.85,
-        "value": 209.10000000000002,
-        "pnl": 1.2500000000000284,
-        "m2m": 1.2500000000000284,
-        "unrealised": 1.2500000000000284,
-        "realised": 0,
-        "buy_quantity": 1,
-        "buy_price": 208.7,
-        "buy_value": 208.7,
-        "buy_m2m": 208.7,
-        "sell_quantity": 2,
-        "sell_price": 208.9,
-        "sell_value": 417.8,
-        "sell_m2m": 417.8,
-        "day_buy_quantity": 1,
-        "day_buy_price": 208.7,
-        "day_buy_value": 208.7,
-        "day_sell_quantity": 2,
-        "day_sell_price": 208.9,
-        "day_sell_value": 417.8
-    },
-    {
-        "tradingsymbol": "MAN",
-        "exchange": "BSE",
-        "instrument_token": 136231684,
-        "product": "CNC",
-        "quantity": -1,
-        "overnight_quantity": 0,
-        "multiplier": 1,
-        "average_price": 208.9,
-        "close_price": 0,
-        "last_price": 207.85,
-        "value": 209.10000000000002,
-        "pnl": 1.2500000000000284,
-        "m2m": 1.2500000000000284,
-        "unrealised": 1.2500000000000284,
-        "realised": 0,
-        "buy_quantity": 1,
-        "buy_price": 208.7,
-        "buy_value": 208.7,
-        "buy_m2m": 208.7,
-        "sell_quantity": 2,
-        "sell_price": 208.9,
-        "sell_value": 417.8,
-        "sell_m2m": 417.8,
-        "day_buy_quantity": 1,
-        "day_buy_price": 208.7,
-        "day_buy_value": 208.7,
-        "day_sell_quantity": 2,
-        "day_sell_price": 208.9,
-        "day_sell_value": 417.8
-    },
-    {
-        "tradingsymbol": "RAM",
-        "exchange": "BSE",
-        "instrument_token": 136231684,
-        "product": "CNC",
-        "quantity": 1,
-        "overnight_quantity": 0,
-        "multiplier": 1,
-        "average_price": 208.9,
-        "close_price": 0,
-        "last_price": 207.85,
-        "value": 209.10000000000002,
-        "pnl": 1.2500000000000284,
-        "m2m": 1.2500000000000284,
-        "unrealised": 1.2500000000000284,
-        "realised": 0,
-        "buy_quantity": 1,
-        "buy_price": 208.7,
-        "buy_value": 208.7,
-        "buy_m2m": 208.7,
-        "sell_quantity": 2,
-        "sell_price": 208.9,
-        "sell_value": 417.8,
-        "sell_m2m": 417.8,
-        "day_buy_quantity": 1,
-        "day_buy_price": 208.7,
-        "day_buy_value": 208.7,
-        "day_sell_quantity": 2,
-        "day_sell_price": 208.9,
-        "day_sell_value": 417.8
-    }
-]'''
-
-# Parse JSON data
-data = json.loads(json_data)
-
-# Find the object with "tradingsymbol": "RAM" and quantity as 1
-ram_data = [item for item in data if item.get("tradingsymbol") == "RAM" and item.get("quantity") == 1]
-
-print(ram_data)
+while True:
+    try:
+        # Code that may raise an exception
+        number = float(input("Enter a number: "))
+        result = 10 / number
+        print("Result:", result)
+    except ZeroDivisionError:
+        # Code to handle the ZeroDivisionError exception
+        print("Error: Cannot divide by zero. Please try again.")
+    except ValueError:
+        # Code to handle the ValueError exception (if the input is not a valid number)
+        print("Error: Please enter a valid number.")
+    except Exception as e:
+        # Code to handle any other exceptions
+        print("An unexpected error occurred:", e)
+        break  # Exit the loop if an unexpected error occurs
