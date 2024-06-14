@@ -1,38 +1,28 @@
-from get_Instrument_Id import read_instrument_id
-from kite_current_time import CurrentTIme
-from kite_time_diff import Kite_TimeConverter
-from read_open_position_status import find_first_matching_entry
-import json
-from kite import get_api_key
+from breeze_connect import BreezeConnect
 
-kite = get_api_key()
+from TimeDiff import TimeConverter
+from currentTime import DateTimeConverter
 
-# Retrieve open positions
+# Initialize SDK
+breeze = BreezeConnect(api_key="4`32&2Sp2kb2988N68^6!3364324=9D@")
 
-trading_symbol = "GAIL"
+# Generate Session
+breeze.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5",
+                        session_token="42470901")
 
-instrument_id = read_instrument_id(kite, trading_symbol)
-
-converter = CurrentTIme()
+converter = DateTimeConverter()
 current_time_in_ist = converter.get_current_ist_time()
 print("PRINT THE CURRENT TIME:: ", current_time_in_ist)
-current_time_1_mins_before = Kite_TimeConverter.kite_convert_to_ist(1)
-print("PRINT 1 MIN BEFORE THE CURRENT TIME:: ", current_time_1_mins_before)
+current_time_1_mins_before = TimeConverter.convert_to_ist(1)
 
-from_date = "2024-06-05 12:45:00"
-to_date = "2024-06-05 12:55:00"
+company_stock_code = "GAIL"
 
-f, is_matching=find_first_matching_entry(kite,"GAIL","-1")
+data = breeze.get_historical_data_v2(interval="1second",
+                                     from_date=current_time_1_mins_before,
+                                     to_date=current_time_in_ist,
+                                     stock_code=company_stock_code,
+                                     exchange_code="NSE",
+                                     product_type="cash")
+print(data)
 
-print(f)
-print(is_matching)
 
-buy = kite.positions()
-
-ram_data = [item for item in buy["day"] if item.get("tradingsymbol") == "RAM" and item.get("quantity") == -1]
-
-if ram_data:
-    print("Data present  ", ram_data)
-    print(ram_data[0]["average_price"])
-else:
-    print("no data")

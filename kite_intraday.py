@@ -5,7 +5,6 @@ from TimeDiff import TimeConverter
 from TimeTracker5min import TimeTracker
 import matplotlib.pyplot as plt
 from datetime import datetime
-from breeze_connect import BreezeConnect
 import time
 import pandas as pd
 
@@ -20,7 +19,7 @@ from read_open_position_status import find_first_matching_entry
 start_hour, start_minute = 9, 15
 
 # STOCK MARKET MY END TIME
-end_hour, end_minute = 14, 45  # 7:30 PM
+end_hour, end_minute = 15, 00  # 7:30 PM
 Iteration = 1
 
 Api_Count = 0
@@ -75,6 +74,7 @@ while True:
 
                 data = kite.historical_data(instrument_id, current_time_10_mins_before, current_time_in_ist, "5minute")
                 last_close_price_5min_candle = data[-1]['close']
+                last_high_price_5min_candle = data[-1]['high']
 
                 Api_Count += 1
 
@@ -118,20 +118,23 @@ while True:
                     time.sleep(1)
                     data2 = kite.historical_data(instrument_id, current_time_1_mins_before, current_time_in_ist, "minute")
                     last_open_price_1min_Candle = data2[0]['open']
+                    last_close_price_1min_Candle = data2[0]['close']
 
-                    if last_close_price_5min_candle >= last_open_price_1min_Candle:
+                    quantity=1000
+
+                    if last_close_price_1min_Candle >= last_high_price_5min_candle:
                         Api_Count += 1
                         kite.place_order(
                             tradingsymbol=trading_symbol,
                             variety="regular",
                             exchange='NSE',
                             transaction_type='BUY',
-                            quantity=1,
+                            quantity=quantity,
                             order_type='MARKET',
                             product='MIS'
                         )
                         Api_Count += 1
-                        result_data, is_matching = find_first_matching_entry(kite, trading_symbol, 1)
+                        result_data, is_matching = find_first_matching_entry(kite, trading_symbol, quantity)
                         while True:
                             if is_matching:
                                 print("BUY STOCK SUCCESSFULLY IN PORTFOLIO")
@@ -139,13 +142,13 @@ while True:
                             else:
                                 print("BUY SIDE STOCK STILL NOT IN OPEN POSITIONS IN PORTFOLIO. RETRYING...")
                                 time.sleep(2)
-                                result_data, is_matching = find_first_matching_entry(kite, trading_symbol, 1)
+                                result_data, is_matching = find_first_matching_entry(kite, trading_symbol, quantity)
                                 Api_Count += 1
 
                         buy_price = result_data[0]["average_price"]
                         print("EXECUTED BUY ORDER WITH PRICE OF:: ", buy_price)
 
-                        long_value = float(buy_price) + 0.2
+                        long_value = float(buy_price) + 0.3
                         sell_price = round(long_value, 2)
 
                         if is_matching:
@@ -154,7 +157,7 @@ while True:
                                 variety="regular",
                                 exchange='NSE',
                                 transaction_type='SELL',
-                                quantity=1,
+                                quantity=quantity,
                                 price=sell_price,
                                 order_type="LIMIT",
                                 product='MIS'
