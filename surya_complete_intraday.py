@@ -51,7 +51,7 @@ while True:
 
             # Generate Session
             breeze.generate_session(api_secret="y85q57170j648864136eL24878uZ00S5",
-                                    session_token="42645915")
+                                    session_token="42732518")
 
             print("BREEZE API CONNECTION ESTABLISHED SUCCESSFULLY")
 
@@ -62,7 +62,7 @@ while True:
             # TimeTracker.run()
 
             converter = CurrentTIme()
-            current_time_in_ist = converter.get_current_ist_time()
+            start_time = converter.get_current_ist_time()
 
             current_time_5_mins_before = TimeConverter.convert_to_ist(5)
             print("PRINT THE 5 MINS BEFORE THE CURRENT TIME:: ", current_time_5_mins_before)
@@ -80,12 +80,12 @@ while True:
 
                 # Wait for 1 minute (60 seconds)
                 print("WAITING FOR 1 MINUTE")
-                # time.sleep(60)
+                time.sleep(60)
                 company_stock_code = "GAIL"
 
-                data = breeze.get_historical_data_v2(interval="5minute",
-                                                     from_date="2024-06-18T14:15:00.000Z",
-                                                     to_date="2024-06-18T14:20:00.000Z",
+                data = breeze.get_historical_data_v2(interval="1minute",
+                                                     from_date="2024-06-19T15:25:00.000Z",
+                                                     to_date="2024-06-19T15:30:00.000Z",
                                                      stock_code=company_stock_code,
                                                      exchange_code="NSE",
                                                      product_type="cash")

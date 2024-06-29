@@ -16,7 +16,7 @@ from readStockData import get_trade_by_stock_code
 from read_open_position_status import find_first_matching_entry
 
 # STOCK MARKET MY START TIME
-start_hour, start_minute = 9, 15
+start_hour, start_minute = 8, 15
 
 # STOCK MARKET MY END TIME
 end_hour, end_minute = 15, 00  # 7:30 PM
@@ -120,7 +120,7 @@ while True:
                     last_open_price_1min_Candle = data2[0]['open']
                     last_close_price_1min_Candle = data2[0]['close']
 
-                    quantity=1000
+                    quantity=1
 
                     if last_close_price_1min_Candle >= last_high_price_5min_candle:
                         Api_Count += 1
